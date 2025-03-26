@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --pattern-color: rgba(0, 0, 0, 0.1);
+    --pattern-size: 20px;
+    --pattern-opacity: 0.1;
+  }
+
+  /* Font family utilities */
+  .font-inter { font-family: 'Inter', sans-serif; }
+  .font-playfair { font-family: 'Playfair Display', serif; }
+  .font-montserrat { font-family: 'Montserrat', sans-serif; }
+  .font-lora { font-family: 'Lora', serif; }
+  .font-roboto { font-family: 'Roboto', sans-serif; }
+  .font-opensans { font-family: 'Open Sans', sans-serif; }
+  .font-sourcesans { font-family: 'Source Sans Pro', sans-serif; }
+  .font-merriweather { font-family: 'Merriweather', serif; }
+  .font-poppins { font-family: 'Poppins', sans-serif; }
+  .font-raleway { font-family: 'Raleway', sans-serif; }
+  .font-nunito { font-family: 'Nunito', sans-serif; }
+  .font-quicksand { font-family: 'Quicksand', sans-serif; }
+  .font-firasans { font-family: 'Fira Sans', sans-serif; }
+  .font-ubuntu { font-family: 'Ubuntu', sans-serif; }
+  .font-josefin { font-family: 'Josefin Sans', sans-serif; }
+}
+
+@layer components {
+  .glass {
+    @apply backdrop-blur-md bg-white/20 border border-white/30 shadow-lg;
+  }
+  
+  .glass-button {
+    @apply backdrop-blur-sm bg-white/10 hover:bg-white/20 border border-white/30 
+           shadow-sm transition-all duration-200 rounded-lg;
+  }
+
+  .glass-panel {
+    @apply backdrop-blur-xl bg-white/30 border-l border-white/30 shadow-lg;
+  }
+
+  .glass-toolbar {
+    @apply backdrop-blur-xl bg-white/30 border-b border-white/30 shadow-sm;
+  }
+
+  .glass-input {
+    @apply backdrop-blur-sm bg-white/10 border border-white/30 rounded-lg 
+           focus:ring-2 focus:ring-white/50 focus:border-white/50;
+  }
+
+  .editor-page {
+    @apply min-h-screen bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20;
+  }
+}
+
+/* Pattern styles */
+.pattern-dots-sm {
+  background-image: radial-gradient(var(--pattern-color) 1px, transparent 1px);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+.pattern-checks-sm {
+  background-image: repeating-linear-gradient(45deg, var(--pattern-color) 25%, transparent 25%, transparent 75%, var(--pattern-color) 75%, var(--pattern-color)),
+                    repeating-linear-gradient(45deg, var(--pattern-color) 25%, transparent 25%, transparent 75%, var(--pattern-color) 75%, var(--pattern-color));
+  background-position: 0 0, calc(var(--pattern-size) / 2 * 1px) calc(var(--pattern-size) / 2 * 1px);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+.pattern-grid-sm {
+  background-image: linear-gradient(var(--pattern-color) 1px, transparent 1px),
+                    linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+.pattern-cross-dots-sm {
+  background-image: radial-gradient(var(--pattern-color) 1px, transparent 1px),
+                    radial-gradient(var(--pattern-color) 1px, transparent 1px);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+  background-position: 0 0, calc(var(--pattern-size) / 2 * 1px) calc(var(--pattern-size) / 2 * 1px);
+}
+
+.pattern-zigzag-sm {
+  background-image: linear-gradient(135deg, var(--pattern-color) 25%, transparent 25%),
+                    linear-gradient(225deg, var(--pattern-color) 25%, transparent 25%);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+.pattern-diagonal-lines-sm {
+  background-image: repeating-linear-gradient(45deg, var(--pattern-color) 0, var(--pattern-color) 1px, transparent 0, transparent 50%);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+.pattern-vertical-lines-sm {
+  background-image: repeating-linear-gradient(90deg, var(--pattern-color), var(--pattern-color) 1px, transparent 1px, transparent);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+.pattern-horizontal-lines-sm {
+  background-image: repeating-linear-gradient(0deg, var(--pattern-color), var(--pattern-color) 1px, transparent 1px, transparent);
+  background-size: calc(var(--pattern-size) * 1px) calc(var(--pattern-size) * 1px);
+}
+
+[class*='pattern-'] {
+  background-color: white;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    forced-color-adjust: none !important;
+  }
+
+  .editor-content {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .print-text {
+    position: absolute !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    forced-color-adjust: none !important;
+    color: var(--print-color) !important;
+  }
+
+  .toolbar,
+  .right-panel,
+  .mode-switch,
+  .handle,
+  .glass-button,
+  .print\:hidden {
+    display: none !important;
+  }
+}
+/* Hide scrollbars globally while keeping scroll behavior */
+* {
+  scrollbar-width: none;         /* Firefox */
+  -ms-overflow-style: none;      /* IE 10+ */
+}
+
+*::-webkit-scrollbar {
+  display: none;                 /* Chrome, Safari, Edge */
+}
