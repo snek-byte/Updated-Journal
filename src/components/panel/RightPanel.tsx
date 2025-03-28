@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { GRADIENTS } from '../../config/constants';
 import { ChevronRight, ChevronLeft, RotateCw } from 'lucide-react';
@@ -12,7 +11,7 @@ import { useEditorStore } from '../../store/editorStore';
 type Tab = 'backgrounds' | 'patterns' | 'icons';
 type Pattern = { thumbnail: string; full: string };
 
-const RightPanelContent = React.memo(() => {
+const RightPanelComponent = React.memo(() => {
   const [activeTab, setActiveTab] = React.useState<Tab>('backgrounds');
   const [patternMode, setPatternMode] = React.useState<PatternMode>('triangles');
   const [patternSet, setPatternSet] = React.useState<Pattern[]>([]);
@@ -25,12 +24,16 @@ const RightPanelContent = React.memo(() => {
 
   React.useEffect(() => {
     if (activeTab === 'patterns') {
-      setPatternSet(Array.from({ length: 6 }, () => generateRandomPattern(patternMode)));
+      setPatternSet(Array.from({ length: 6 }, () =>
+        generateRandomPattern(patternMode, backgroundColor)
+      ));
     }
-  }, [activeTab, patternMode]);
+  }, [activeTab, patternMode, backgroundColor]);
 
   const regenerate = () => {
-    setPatternSet(Array.from({ length: 6 }, () => generateRandomPattern(patternMode)));
+    setPatternSet(Array.from({ length: 6 }, () =>
+      generateRandomPattern(patternMode, backgroundColor)
+    ));
   };
 
   const handleRandomGradient = () => {
@@ -74,9 +77,9 @@ const RightPanelContent = React.memo(() => {
   );
 
   const renderPatternsTab = () => (
-    <div className="grid gap-2 p-2 overflow-y-auto flex-1">
+    <div className="space-y-3 p-2 overflow-y-auto flex-1">
       <GlassDropdown
-        options={['triangles', 'doodles']}
+        options={['triangles', 'simplex', 'rough-circles', 'rough-grid', 'rough-waves']}
         value={patternMode}
         onChange={(val) => setPatternMode(val as PatternMode)}
       />
@@ -88,25 +91,28 @@ const RightPanelContent = React.memo(() => {
         <RotateCw size={16} /> Regenerate Patterns
       </button>
 
-      {patternSet.map(({ thumbnail, full }, i) => (
-        <div
-          key={i}
-          className="w-full h-[100px] cursor-pointer rounded border"
-          style={{
-            backgroundImage: `url("${thumbnail}")`,
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
-          }}
-          onClick={() => setBackground('paper', `url("${full}")`)}
-        />
-      ))}
+      <div className="grid gap-2">
+        {patternSet.map(({ thumbnail, full }, i) => (
+          <div
+            key={i}
+            className="w-full aspect-[5/2] rounded border cursor-pointer overflow-hidden"
+            style={{
+              backgroundImage: `url("${thumbnail}")`,
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+            }}
+            onClick={() => setBackground('paper', `url("${full}")`)}
+          />
+        ))}
+      </div>
     </div>
   );
 
   const renderIconsTab = () => <IconLibrary />;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-72 min-w-[18rem]">
       <div className="flex items-center justify-between p-1.5 border-b border-white/20">
         <div className="flex gap-1">
           {(['backgrounds', 'patterns', 'icons'] as Tab[]).map((tab) => (
@@ -134,36 +140,6 @@ const RightPanelContent = React.memo(() => {
   );
 });
 
-RightPanelContent.displayName = 'RightPanelContent';
+RightPanelComponent.displayName = 'RightPanel';
 
-export const RightPanel: React.FC = () => {
-  const { isPanelDocked, setPanelDocked } = useEditorStore((state) => ({
-    isPanelDocked: state.isPanelDocked,
-    setPanelDocked: state.setPanelDocked,
-  }));
-
-  return (
-    <div className="relative" style={{ height: 'calc(297mm + 32px)' }}>
-      <button
-        onClick={() => setPanelDocked(!isPanelDocked)}
-        className="glass-button absolute -left-6 -top-6 h-6 w-12 flex items-center justify-center rounded-l-lg hover:bg-white/30 transition-all duration-200 z-50"
-      >
-        {isPanelDocked ? (
-          <ChevronRight size={16} className="text-gray-600" />
-        ) : (
-          <ChevronLeft size={16} className="text-gray-600" />
-        )}
-      </button>
-
-      <div
-        className={`glass-panel w-72 h-full overflow-hidden transition-all duration-300 flex flex-col rounded-bl-xl ${
-          isPanelDocked
-            ? 'translate-x-0 opacity-100'
-            : 'translate-x-full opacity-0'
-        }`}
-      >
-        <RightPanelContent />
-      </div>
-    </div>
-  );
-};
+export const RightPanel = RightPanelComponent;
