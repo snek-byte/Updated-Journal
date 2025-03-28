@@ -1,44 +1,42 @@
-import React from 'react'; 
-import { useEditorStore } from '../../store/editorStore';
-import { GRADIENTS, PAPERS } from '../../config/constants';
+
+import React from 'react';
+import { GRADIENTS } from '../../config/constants';
 import { ChevronRight, ChevronLeft, RotateCw } from 'lucide-react';
 import { BackgroundPreview } from './BackgroundPreview';
 import { IconLibrary } from './IconLibrary';
 import { ColorPicker } from '../ui/ColorPicker';
-import { generateRandomPattern } from '../../utils/patternGenerator';
+import { GlassDropdown } from '../ui/GlassDropdown';
+import { generateRandomPattern, PatternMode } from '../../utils/patternGenerator';
+import { useEditorStore } from '../../store/editorStore';
 
 type Tab = 'backgrounds' | 'patterns' | 'icons';
+type Pattern = { thumbnail: string; full: string };
 
 const RightPanelContent = React.memo(() => {
   const [activeTab, setActiveTab] = React.useState<Tab>('backgrounds');
+  const [patternMode, setPatternMode] = React.useState<PatternMode>('triangles');
+  const [patternSet, setPatternSet] = React.useState<Pattern[]>([]);
 
   const {
     backgroundColor,
-    backgroundType,
-    backgroundValue,
     setBackground,
     setBackgroundColor,
-    regeneratePattern,
-    patternUrl,
-    setPatternUrl,
   } = useEditorStore();
+
+  React.useEffect(() => {
+    if (activeTab === 'patterns') {
+      setPatternSet(Array.from({ length: 6 }, () => generateRandomPattern(patternMode)));
+    }
+  }, [activeTab, patternMode]);
+
+  const regenerate = () => {
+    setPatternSet(Array.from({ length: 6 }, () => generateRandomPattern(patternMode)));
+  };
 
   const handleRandomGradient = () => {
     const values = Object.values(GRADIENTS);
     const random = values[Math.floor(Math.random() * values.length)];
     setBackground('gradient', random);
-  };
-
-  const regenerate = () => {
-    if (backgroundType === 'gradient') {
-      handleRandomGradient();
-    } else if (backgroundType === 'paper') {
-      regeneratePattern();
-    } else if (backgroundType === 'pattern') {
-      const pattern = generateRandomPattern();
-      setPatternUrl(pattern);
-      setBackground('pattern', pattern);
-    }
   };
 
   const renderBackgroundsTab = () => (
@@ -77,27 +75,31 @@ const RightPanelContent = React.memo(() => {
 
   const renderPatternsTab = () => (
     <div className="grid gap-2 p-2 overflow-y-auto flex-1">
-      {patternUrl && (
-        <BackgroundPreview
-          key="generated-pattern"
-          type="pattern"
-          value={patternUrl}
-          backgroundColor={backgroundColor}
-          onClick={() => setBackground('pattern', patternUrl)}
+      <GlassDropdown
+        options={['triangles', 'doodles']}
+        value={patternMode}
+        onChange={(val) => setPatternMode(val as PatternMode)}
+      />
+
+      <button
+        onClick={regenerate}
+        className="glass-button px-4 py-1 text-sm flex items-center gap-2"
+      >
+        <RotateCw size={16} /> Regenerate Patterns
+      </button>
+
+      {patternSet.map(({ thumbnail, full }, i) => (
+        <div
+          key={i}
+          className="w-full h-[100px] cursor-pointer rounded border"
+          style={{
+            backgroundImage: `url("${thumbnail}")`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          }}
+          onClick={() => setBackground('paper', `url("${full}")`)}
         />
-      )}
-      {Object.entries(PAPERS)
-        .filter(([name]) => name !== 'white')
-        .slice(0, 6)
-        .map(([name, value]) => (
-          <BackgroundPreview
-            key={name}
-            type="paper"
-            value={value}
-            backgroundColor={backgroundColor}
-            onClick={() => setBackground('paper', value)}
-          />
-        ))}
+      ))}
     </div>
   );
 
@@ -105,7 +107,6 @@ const RightPanelContent = React.memo(() => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Tabs */}
       <div className="flex items-center justify-between p-1.5 border-b border-white/20">
         <div className="flex gap-1">
           {(['backgrounds', 'patterns', 'icons'] as Tab[]).map((tab) => (
@@ -122,19 +123,8 @@ const RightPanelContent = React.memo(() => {
             </button>
           ))}
         </div>
-
-        {(backgroundType === 'gradient' || backgroundType === 'paper' || backgroundType === 'pattern') && (
-          <button
-            onClick={regenerate}
-            className="p-1 rounded hover:bg-white/10 transition-colors"
-            title="Regenerate pattern"
-          >
-            <RotateCw size={14} className="text-gray-600" />
-          </button>
-        )}
       </div>
 
-      {/* Tab content */}
       <div className="flex-1 min-h-0 overflow-hidden">
         {activeTab === 'backgrounds' && renderBackgroundsTab()}
         {activeTab === 'patterns' && renderPatternsTab()}

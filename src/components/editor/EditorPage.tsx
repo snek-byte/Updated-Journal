@@ -18,6 +18,8 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { TextBox } from './TextBox';
 import { editorTheme } from '../../config/editorTheme';
 
+console.log('✅ EditorPage.tsx loaded');
+
 const initialConfig = {
   namespace: 'CustomEditor',
   theme: editorTheme,
@@ -30,27 +32,27 @@ const initialConfig = {
     LinkNode,
     HeadingNode,
     QuoteNode,
-    CodeNode
+    CodeNode,
   ],
   onError: (error: Error) => {
-    console.error(error);
+    console.error('❌ Lexical error:', error);
   },
 };
 
 export const EditorPage: React.FC = () => {
-  const { 
-    backgroundType, 
-    backgroundColor, 
-    backgroundValue, 
+  console.log('✅ EditorPage is rendering');
+
+  const {
+    backgroundType,
+    backgroundColor,
+    backgroundValue,
     textBoxes,
     updateTextBox,
-    fontFamily 
+    fontFamily,
   } = useEditorStore();
 
   const getBackgroundStyles = () => {
-    const styles: React.CSSProperties = {
-      backgroundColor
-    };
+    const styles: React.CSSProperties = { backgroundColor };
 
     if (backgroundType === 'gradient') {
       styles.backgroundImage = backgroundValue;
@@ -67,21 +69,21 @@ export const EditorPage: React.FC = () => {
 
   const getFontClass = () => {
     const fontMap: { [key: string]: string } = {
-      'Inter': 'font-inter',
+      Inter: 'font-inter',
       'Playfair Display': 'font-playfair',
-      'Montserrat': 'font-montserrat',
-      'Lora': 'font-lora',
-      'Roboto': 'font-roboto',
+      Montserrat: 'font-montserrat',
+      Lora: 'font-lora',
+      Roboto: 'font-roboto',
       'Open Sans': 'font-opensans',
       'Source Sans Pro': 'font-sourcesans',
-      'Merriweather': 'font-merriweather',
-      'Poppins': 'font-poppins',
-      'Raleway': 'font-raleway',
-      'Nunito': 'font-nunito',
-      'Quicksand': 'font-quicksand',
+      Merriweather: 'font-merriweather',
+      Poppins: 'font-poppins',
+      Raleway: 'font-raleway',
+      Nunito: 'font-nunito',
+      Quicksand: 'font-quicksand',
       'Fira Sans': 'font-firasans',
-      'Ubuntu': 'font-ubuntu',
-      'Josefin Sans': 'font-josefin'
+      Ubuntu: 'font-ubuntu',
+      'Josefin Sans': 'font-josefin',
     };
     return fontMap[fontFamily] || 'font-inter';
   };
@@ -93,25 +95,27 @@ export const EditorPage: React.FC = () => {
           <Toolbar />
           <div className="flex-1 flex overflow-hidden">
             <div className="flex-1 flex items-center justify-center p-8">
-              <div 
+              <div
                 className={`editor-content w-[210mm] h-[297mm] glass rounded-xl overflow-hidden shadow-lg relative ${getFontClass()}`}
                 style={getBackgroundStyles()}
               >
                 <div className="relative h-full">
                   <RichTextPlugin
                     contentEditable={
-                      <ContentEditable 
-                        className="outline-none h-full p-6 min-h-[297mm] pointer-events-none"
-                      />
+                      <ContentEditable className="outline-none h-full p-6 min-h-[297mm]" />
                     }
-                    placeholder={null}
+                    placeholder={
+                      <div className="text-gray-400 p-4">
+                        Start typing here...
+                      </div>
+                    }
                     ErrorBoundary={LexicalErrorBoundary}
                   />
                   <HistoryPlugin />
                   <ListPlugin />
                   <LinkPlugin />
                   <TablePlugin />
-                  
+
                   <div className="absolute inset-0">
                     {textBoxes.map((textBox) => (
                       <TextBox
@@ -120,7 +124,9 @@ export const EditorPage: React.FC = () => {
                         content={textBox.content}
                         position={textBox.position}
                         style={textBox.style}
-                        onPositionChange={(position) => updateTextBox(textBox.id, { position })}
+                        onPositionChange={(position) =>
+                          updateTextBox(textBox.id, { position })
+                        }
                       />
                     ))}
                   </div>
